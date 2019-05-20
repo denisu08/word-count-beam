@@ -1,0 +1,1 @@
+You can manipulate your data using the various transforms provided in the Beam SDKs. To do this, you apply the trannsforms to your pipeline’s PCollection by calling the apply method on each PCollection that you want to process and passing the desired transform object as an argument.

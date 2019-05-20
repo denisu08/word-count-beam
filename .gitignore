@@ -1,9 +1,3 @@
-bible*
-counts*
-kjv*
-*.txt
-*.iml
-
 target/
 .idea/*
 
