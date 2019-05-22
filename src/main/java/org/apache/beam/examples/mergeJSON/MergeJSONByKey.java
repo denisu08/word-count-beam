@@ -18,20 +18,22 @@
 package org.apache.beam.examples.mergeJSON;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.*;
+import org.apache.beam.sdk.transforms.join.CoGbkResult;
+import org.apache.beam.sdk.transforms.join.CoGroupByKey;
+import org.apache.beam.sdk.transforms.join.KeyedPCollectionTuple;
 import org.apache.beam.sdk.values.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.Map;
 
-public class MergeJSON {
+public class MergeJSONByKey {
 
     public interface AppOptions extends PipelineOptions {
 
@@ -62,7 +64,7 @@ public class MergeJSON {
         public PCollection<Department> expand(PBegin input) {
             return input.apply(TextIO.read().from("rawdata/merge/department.json"))
                     .apply("MapToDepartment", ParDo.of(new DoFn<String, Department>() {
-                        @DoFn.ProcessElement
+                        @ProcessElement
                         public void onElement(@Element final String file, final OutputReceiver<Department> emitter) throws IOException {
                             if (om == null) {
                                 om = new ObjectMapper();
@@ -82,7 +84,7 @@ public class MergeJSON {
         public PCollection<Employee> expand(PBegin input) {
             return input.apply(TextIO.read().from("rawdata/merge/employee.json"))
                     .apply("MapToEmployee", ParDo.of(new DoFn<String, Employee>() {
-                        @DoFn.ProcessElement
+                        @ProcessElement
                         public void onElement(@Element final String file, final OutputReceiver<Employee> emitter) throws IOException {
                             if (om == null) {
                                 om = new ObjectMapper();
@@ -102,7 +104,7 @@ public class MergeJSON {
                 p.apply(new LoadDepts())
                         .apply("getKey", MapElements.into(TypeDescriptors.kvs(TypeDescriptors.strings(), TypeDescriptor.of(Department.class)))
                                 .via(dept -> KV.of(dept.getId(), dept)));
-                        // alternatve
+        // alternatve
                         /*.apply("getKey", MapElements.via(
                             new SimpleFunction<Department, KV<String, Department>>() {
                               public KV<String, Department> apply(Department dept) {
@@ -111,13 +113,15 @@ public class MergeJSON {
                             }
                         ));*/
 
-        // We then convert this PCollection into a map-type PCollectionView.
-        // We can access this map directly within a ParDo.
+        // Because we will perform a join, employees also need to be put into
+        // key-value pairs, where their key is their *department id*.
         PCollectionView<Map<String, Department>> departmentSideInput =
                 departments.apply("ToMapSideInput", View.<String, Department>asMap());
 
         // We load the PCollection of employees
-        PCollection<Employee> employees = p.apply(new LoadEmployees());
+        PCollection<KV<String, Employee>> employees = p.apply(new LoadEmployees())
+                .apply("getKey", MapElements.into(TypeDescriptors.kvs(TypeDescriptors.strings(), TypeDescriptor.of(Employee.class)))
+                        .via(emp -> KV.of(emp.getDepartmentId(), emp)));
 
         // Let's suppose that we will *extend* an employee's information with their
         // Department information. I have assumed the existence of an ExtendedEmployee
@@ -135,33 +139,60 @@ public class MergeJSON {
                 ExtendedEmployee result = empl.extendWith(dept);
                 c.output(result);
             }
-
         }
 
-        // We apply the ParDo to extend the employee with department information
-        // and specify that it takes in a departmentSideInput.
-        PCollection<ExtendedEmployee> extendedEmployees =
-                employees.apply(
-                        ParDo.of(new JoinDeptEmployeeDoFn()).withSideInputs(departmentSideInput));
+        // The syntax for a CoGroupByKey operation is a bit verbose.
+        // In this step we define a TupleTag, which serves as identifier for a
+        // PCollection.
+        final TupleTag<Employee> employeesTag = new TupleTag<>();
+        final TupleTag<Department> departmentsTag = new TupleTag<>();
 
-        extendedEmployees.apply("MapToJson", ParDo.of(new DoFn<ExtendedEmployee, String>() {
-            private transient ObjectMapper om;
-
+        // We define a DoFn that is able to join a single department with multiple
+        // employees.
+        class JoinEmployeesWithDepartments extends DoFn<KV<String, CoGbkResult>, ExtendedEmployee> {
             @ProcessElement
-            public void onElement(
-                    @Element final ExtendedEmployee person,
-                    final OutputReceiver<String> emitter) throws JsonProcessingException {
-                if (om == null) {
-                    om = new ObjectMapper();
-                }
-                emitter.output(om.writeValueAsString(person));
-            }
+            public void processElement(ProcessContext c) {
+                // KV<...> elm = c.element();
+                // We assume one department with the same ID, and assume that
+                // employees always have a department available.
+                Department dept = c.element().getValue().getOnly(departmentsTag);
+                Iterable<Employee> employees = c.element().getValue().getAll(employeesTag);
 
-            @Teardown
-            public void onTearDown() {
-                om = null;
+                for (Employee empl : employees) {
+                    ExtendedEmployee result = empl.extendWith(dept);
+                    c.output(result);
+                }
             }
-        })).apply("WriteCounts", TextIO.write().to("rawdata/merge/extendedEmployee.json").withoutSharding());
+        }
+
+        // We use the PCollection tuple-tags to join the two PCollections.
+        PCollection<KV<String, CoGbkResult>> results =
+                KeyedPCollectionTuple.of(departmentsTag, departments)
+                        .and(employeesTag, employees)
+                        .apply(CoGroupByKey.create());
+
+        // Finally, we convert the joined PCollections into a kind that
+        // we can use: ExtendedEmployee.
+        PCollection<ExtendedEmployee> extendedEmployees = results.apply("ExtendInformation", ParDo.of(new JoinEmployeesWithDepartments()));
+        extendedEmployees.apply("MapToJson", ParDo.of(new DoFn<ExtendedEmployee, String>() {
+                    private transient ObjectMapper om;
+
+                    @ProcessElement
+                    public void onElement(
+                            @Element final ExtendedEmployee person,
+                            final OutputReceiver<String> emitter) throws JsonProcessingException {
+                        if (om == null) {
+                            om = new ObjectMapper();
+                        }
+                        emitter.output(om.writeValueAsString(person));
+                    }
+
+                    @Teardown
+                    public void onTearDown() {
+                        om = null;
+                    }
+                }))
+                .apply("WriteCounts", TextIO.write().to("rawdata/merge/extendedEmployee2.json").withoutSharding());
 
         p.run().waitUntilFinish();
     }

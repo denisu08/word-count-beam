@@ -1,6 +1,5 @@
 package org.apache.beam.examples.mergeJSON;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
@@ -11,7 +10,8 @@ public class Department implements Serializable {
     protected String name;
     protected String start_year;
 
-    public Department() {}
+    public Department() {
+    }
 
     public Department(String id, String name, String start_year) {
         this.id = id;
@@ -23,6 +23,7 @@ public class Department implements Serializable {
     public String getId() {
         return id;
     }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -31,6 +32,7 @@ public class Department implements Serializable {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -39,6 +41,7 @@ public class Department implements Serializable {
     public String getStart_year() {
         return start_year;
     }
+
     public void setStart_year(String start_year) {
         this.start_year = start_year;
     }

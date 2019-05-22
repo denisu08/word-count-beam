@@ -33,6 +33,7 @@ public class Employee implements Serializable {
     public String getId() {
         return id;
     }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -41,6 +42,7 @@ public class Employee implements Serializable {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -49,6 +51,7 @@ public class Employee implements Serializable {
     public String getCountry() {
         return country;
     }
+
     public void setCountry(String country) {
         this.country = country;
     }
@@ -57,6 +60,7 @@ public class Employee implements Serializable {
     public String getGender() {
         return gender;
     }
+
     public void setGender(String gender) {
         this.gender = gender;
     }
@@ -65,6 +69,7 @@ public class Employee implements Serializable {
     public String getBirth_year() {
         return birth_year;
     }
+
     public void setBirth_year(String birth_year) {
         this.birth_year = birth_year;
     }
@@ -73,6 +78,7 @@ public class Employee implements Serializable {
     public String getEmp_salary() {
         return emp_salary;
     }
+
     public void setEmp_salary(String emp_salary) {
         this.emp_salary = emp_salary;
     }
@@ -81,6 +87,7 @@ public class Employee implements Serializable {
     public String getDepartmentId() {
         return departmentId;
     }
+
     public void setDepartmentId(String departmentId) {
         this.departmentId = departmentId;
     }
@@ -92,5 +99,18 @@ public class Employee implements Serializable {
         extendedEmployee.setDepartmentStartYear(dept.getStart_year());
         extendedEmployee.setEmployeeSalary(this.emp_salary);
         return extendedEmployee;
+    }
+
+    public static Employee of(String id, String name, String dept, String country, String gender, String birth_year, String emp_salary, String departmentId) {
+        Employee employee = new Employee();
+        employee.id = id;
+        employee.name = name;
+        employee.dept = dept;
+        employee.country = country;
+        employee.gender = gender;
+        employee.birth_year = birth_year;
+        employee.emp_salary = emp_salary;
+        employee.departmentId = departmentId;
+        return employee;
     }
 }
