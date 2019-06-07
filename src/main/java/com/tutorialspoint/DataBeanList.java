@@ -21,14 +21,10 @@ public class DataBeanList {
         ArrayList<DataBean> dataBeanList = new ArrayList<DataBean>();
 
         // Create master report data
-        dataBeanList.add(produce("Manisha", "India",
-                Arrays.asList(subBean1)));
-        dataBeanList.add(produce("Dennis Ritchie", "USA",
-                Arrays.asList(subBean2)));
-        dataBeanList.add(produce("V.Anand", "India",
-                Arrays.asList(subBean1)));
-        dataBeanList.add(produce("Shrinath", "California",
-                Arrays.asList(subBean3)));
+        dataBeanList.add(produce("Manisha", "India", Arrays.asList(subBean1)));
+        dataBeanList.add(produce("Dennis Ritchie", "USA", Arrays.asList(subBean2)));
+        dataBeanList.add(produce("V.Anand", "India", Arrays.asList(subBean1)));
+        dataBeanList.add(produce("Shrinath", "California", Arrays.asList(subBean3)));
 
         return dataBeanList;
     }
