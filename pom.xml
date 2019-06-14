@@ -203,6 +203,12 @@
                     <artifactId>beam-runners-direct-java</artifactId>
                     <version>${beam.version}</version>
                 </dependency>
+                <dependency>
+                    <groupId>org.apache.beam</groupId>
+                    <artifactId>beam-sdks-java-io-mongodb</artifactId>
+                    <version>${beam.version}</version>
+                </dependency>
+
                 <!-- Dataflow -->
                 <dependency>
                     <groupId>com.google.cloud.dataflow</groupId>
