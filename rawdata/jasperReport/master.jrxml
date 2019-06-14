@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="jasper_report_template" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6a418e6b-3be8-4f26-847e-1eb9a8db426d">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JsonArrayDataAdapter.xml"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<subDataset name="content" uuid="81c71b8c-5e31-49cf-a231-16ac1c1d1588">
+		<parameter name="SUBREPORT_KEY" class="net.sf.jasperreports.engine.JRReport" isForPrompting="false"/>
+		<field name="country" class="java.lang.String">
+			<fieldDescription><![CDATA[country]]></fieldDescription>
+		</field>
+		<field name="name" class="java.lang.String">
+			<fieldDescription><![CDATA[name]]></fieldDescription>
+		</field>
+	</subDataset>
+	<parameter name="SUBREPORT_KEY" class="net.sf.jasperreports.engine.JRReport" isForPrompting="false"/>
+	<queryString language="json">
+		<![CDATA[]]>
+	</queryString>
+	<field name="country" class="java.lang.String">
+		<fieldDescription><![CDATA[country]]></fieldDescription>
+	</field>
+	<field name="name" class="java.lang.String">
+		<fieldDescription><![CDATA[name]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="35" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="361" height="34" uuid="dad58135-61ec-41cd-bfab-af8f8f41b074"/>
+				<textElement>
+					<font size="26" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Contact Report 2]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="17" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="21" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="112" splitType="Stretch">
+			<componentElement>
+				<reportElement x="0" y="1" width="555" height="111" uuid="c7c6b308-69a2-49bc-8391-6e7584725a9e"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="content" uuid="e0d33b2f-71b5-45d0-aa3d-1dfa8798ede5">
+						<datasetParameter name="SUBREPORT_KEY">
+							<datasetParameterExpression><![CDATA[$P{SUBREPORT_KEY}]]></datasetParameterExpression>
+						</datasetParameter>
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("content")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:listContents height="111" width="555">
+						<staticText>
+							<reportElement x="0" y="0" width="100" height="20" uuid="e5359e5e-1766-4cb0-a3d6-0e983297240f"/>
+							<textElement>
+								<font size="12" isBold="true"/>
+							</textElement>
+							<text><![CDATA[Name:]]></text>
+						</staticText>
+						<staticText>
+							<reportElement x="0" y="20" width="100" height="20" uuid="da72d327-b157-4ace-826f-a182c51961f6"/>
+							<textElement>
+								<font size="12" isBold="true"/>
+							</textElement>
+							<text><![CDATA[Country:]]></text>
+						</staticText>
+						<textField>
+							<reportElement x="104" y="0" width="277" height="20" uuid="4acebeda-e462-4468-ad39-b5e6ead3afed"/>
+							<textElement>
+								<font size="12"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="104" y="20" width="277" height="20" uuid="c698d16f-14a6-4178-880c-d13f2d119920"/>
+							<textElement>
+								<font size="12"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{country}]]></textFieldExpression>
+						</textField>
+						<line>
+							<reportElement x="0" y="50" width="550" height="1" uuid="9ed80d6d-9eff-4634-8066-3861e459d50d"/>
+						</line>
+						<subreport>
+							<reportElement positionType="Float" x="335" y="25" width="175" height="20" isRemoveLineWhenBlank="true" backcolor="#99CCFF" uuid="e541fc92-4398-4429-b804-1b2bb1c4c338"/>
+							<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("subReportBeanList")]]></dataSourceExpression>
+							<subreportExpression><![CDATA[$P{SUBREPORT_KEY}]]></subreportExpression>
+						</subreport>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="19" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="18" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="14" splitType="Stretch"/>
+	</summary>
+</jasperReport>
