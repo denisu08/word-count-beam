@@ -24,6 +24,12 @@
     <artifactId>word-count-beam</artifactId>
     <version>0.1</version>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.0.3.RELEASE</version>
+    </parent>
+
     <packaging>jar</packaging>
 
     <properties>
@@ -60,6 +66,11 @@
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
+        </repository>
+        <repository>
+            <id>repository.spring.release</id>
+            <name>Spring GA Repository</name>
+            <url>http://repo.spring.io/plugins-release/</url>
         </repository>
     </repositories>
 
@@ -136,6 +147,10 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
         </plugins>
 
         <pluginManagement>
@@ -145,6 +160,7 @@
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>${maven-exec-plugin.version}</version>
                     <configuration>
+                        <mainClass>com.howtodoinjava.demo.App</mainClass>
                         <cleanupDaemonThreads>false</cleanupDaemonThreads>
                     </configuration>
                 </plugin>
@@ -175,11 +191,31 @@
                     <groupId>org.apache.hadoop</groupId>
                     <artifactId>hadoop-common</artifactId>
                     <version>3.2.0</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.slf4j</groupId>
+                            <artifactId>slf4j-api</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>org.slf4j</groupId>
+                            <artifactId>slf4j-log4j12</artifactId>
+                        </exclusion>
+                    </exclusions>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.hadoop</groupId>
                     <artifactId>hadoop-mapreduce-client-core</artifactId>
                     <version>3.2.0</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.slf4j</groupId>
+                            <artifactId>slf4j-api</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>org.slf4j</groupId>
+                            <artifactId>slf4j-log4j12</artifactId>
+                        </exclusion>
+                    </exclusions>
                 </dependency>
 
                 <!-- Apache Beam -->
@@ -198,11 +234,11 @@
                     <artifactId>beam-sdks-java-io-jdbc</artifactId>
                     <version>${beam.version}</version>
                 </dependency>
-                <dependency>
-                    <groupId>org.apache.beam</groupId>
-                    <artifactId>beam-runners-direct-java</artifactId>
-                    <version>${beam.version}</version>
-                </dependency>
+                <!--<dependency>-->
+                    <!--<groupId>org.apache.beam</groupId>-->
+                    <!--<artifactId>beam-runners-direct-java</artifactId>-->
+                    <!--<version>${beam.version}</version>-->
+                <!--</dependency>-->
                 <dependency>
                     <groupId>org.apache.beam</groupId>
                     <artifactId>beam-sdks-java-io-mongodb</artifactId>
@@ -216,11 +252,11 @@
                     <version>2.5.0</version>
                 </dependency>
                 <!-- Logging -->
-                <dependency>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-jdk14</artifactId>
-                    <version>1.7.25</version>
-                </dependency>
+                <!--<dependency>-->
+                    <!--<groupId>org.slf4j</groupId>-->
+                    <!--<artifactId>slf4j-jdk14</artifactId>-->
+                    <!--<version>1.7.25</version>-->
+                <!--</dependency>-->
                 <!-- BigQuery -->
                 <dependency>
                     <groupId>com.google.apis</groupId>
@@ -233,11 +269,6 @@
                     <version>1.56.0</version>
                 </dependency>
                 <!-- Database -->
-                <dependency>
-                    <groupId>org.postgresql</groupId>
-                    <artifactId>postgresql</artifactId>
-                    <version>42.2.5.jre7</version>
-                </dependency>
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
@@ -290,7 +321,7 @@
                 <dependency>
                     <groupId>org.apache.beam</groupId>
                     <artifactId>beam-runners-apex</artifactId>
-                    <version>${beam.version}</version>
+                    <version>2.12.0</version>
                     <scope>runtime</scope>
                 </dependency>
                 <!--
@@ -301,7 +332,7 @@
                 <dependency>
                     <groupId>org.apache.httpcomponents</groupId>
                     <artifactId>httpclient</artifactId>
-                    <version>4.3.6</version>
+                    <version>4.5.5</version>
                     <scope>runtime</scope>
                     <exclusions>
                         <exclusion>
@@ -317,7 +348,7 @@
                 <dependency>
                     <groupId>org.apache.hadoop</groupId>
                     <artifactId>hadoop-yarn-client</artifactId>
-                    <version>${hadoop.version}</version>
+                    <version>3.2.0</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
@@ -325,6 +356,16 @@
                     <artifactId>hadoop-common</artifactId>
                     <version>${hadoop.version}</version>
                     <scope>runtime</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.slf4j</groupId>
+                            <artifactId>slf4j-api</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>org.slf4j</groupId>
+                            <artifactId>slf4j-log4j12</artifactId>
+                        </exclusion>
+                    </exclusions>
                 </dependency>
             </dependencies>
         </profile>
@@ -336,7 +377,7 @@
                 <dependency>
                     <groupId>org.apache.beam</groupId>
                     <artifactId>beam-runners-google-cloud-dataflow-java</artifactId>
-                    <version>${beam.version}</version>
+                    <version>2.5.0</version>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
@@ -378,7 +419,7 @@
                 <dependency>
                     <groupId>org.apache.spark</groupId>
                     <artifactId>spark-streaming_2.11</artifactId>
-                    <version>${spark.version}</version>
+                    <version>${beam.version}</version>
                     <scope>runtime</scope>
                     <exclusions>
                         <exclusion>
@@ -545,19 +586,19 @@
         </dependency>
 
         <!-- Add slf4j API frontend binding with JUL backend -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.slf4j</groupId>-->
+            <!--<artifactId>slf4j-api</artifactId>-->
+            <!--<version>${slf4j.version}</version>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>${slf4j.version}</version>
-            <!-- When loaded at runtime this will wire up slf4j to the JUL backend -->
-            <scope>runtime</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.slf4j</groupId>-->
+            <!--<artifactId>slf4j-jdk14</artifactId>-->
+            <!--<version>${slf4j.version}</version>-->
+            <!--&lt;!&ndash; When loaded at runtime this will wire up slf4j to the JUL backend &ndash;&gt;-->
+            <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
 
         <!-- Hamcrest and JUnit are required dependencies of PAssert,
              which is used in the main code of DebuggingWordCount example. -->
@@ -605,6 +646,46 @@
             <artifactId>groovy-all</artifactId>
             <version>3.0.0-beta-1</version>
             <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-batch</artifactId>
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<groupId>org.springframework.boot</groupId>-->
+                    <!--<artifactId>spring-boot-starter-logging</artifactId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<artifactId>logback-classic</artifactId>-->
+                    <!--<groupId>ch.qos.logback</groupId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<artifactId>log4j-over-slf4j</artifactId>-->
+                    <!--<groupId>org.slf4j</groupId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<artifactId>org.slf4j</artifactId>-->
+                    <!--<groupId>slf4j-jdk14</groupId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<groupId>org.slf4j</groupId>-->
+                    <!--<artifactId>slf4j-api</artifactId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<groupId>org.slf4j</groupId>-->
+                    <!--<artifactId>slf4j-log4j12</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-starter-log4j2</artifactId>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>

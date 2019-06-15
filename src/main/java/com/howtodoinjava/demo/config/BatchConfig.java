@@ -1,3 +1,5 @@
+package com.howtodoinjava.demo.config;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
